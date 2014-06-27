@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# generate zipf distribution
+# utils/zipf $1 100 10000 > ../data/zipf1.dist
+# utils/zipf $1 100 10000 > ../data/zipf2.dist
+
+#scripts/utils/zipf $1 100 10000 > data/zipf1.dist
+#scripts/utils/zipf $1 100 10000 > data/zipf2.dist
+
+# run analysis
+rm -r /data/db/*
+Rscript scripts/samples.R
+
+# start mongod server
+../mongo/mongod &
+DB_PID=$!
+
+python scripts/simulate_batch.py
+Rscript scripts/visualize.R
+Rscript scripts/fitting.R
+
+kill -9 $DB_PID &
